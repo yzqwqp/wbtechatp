@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.uusoft.atp.dao.TestMethodMapper">
+	<resultMap id="BaseResultMap" type="com.uusoft.atp.model.TestMethodInfo" >
+	    <result column="METHOD_ID" property="method_id" jdbcType="INTEGER" />
+	    <result column="SERVICE_ID" property="service_id" jdbcType="INTEGER" />
+	    <result column="METHOD_NAME" property="method_name" jdbcType="VARCHAR" />
+	    <result column="METHOD_DES" property="method_des" jdbcType="VARCHAR" />
+	    <result column="CREATE_DATE" property="create_date" jdbcType="TIMESTAMP" />
+	    <result column="UPDATE_DATE" property="update_date" jdbcType="TIMESTAMP" />
+	    <result column="IS_DEL" property="is_del" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	SERVICE_ID, METHOD_ID, METHOD_NAME, METHOD_DES, CREATE_DATE, UPDATE_DATE, IS_DEL
+  	</sql>
+	
+	<insert id="insert" parameterType="com.uusoft.atp.model.TestMethodInfo">
+		insert into TEST_METHOD (SERVICE_ID, METHOD_NAME ,METHOD_DES, CREATE_DATE, IS_DEL)  values (#{service_id}, #{method_name}, #{method_des}, now(), 0)
+	</insert>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_METHOD
+   		where IS_DEL = 0
+	</select>
+		
+	<select id="selectByMethodId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_METHOD
+   		<where>
+   			IS_DEL = 0
+   			<if test="method_id != null">
+   				and  METHOD_ID = #{method_id,jdbcType=INTEGER}
+   			</if>
+   		</where>
+	</select>
+	 
+	<select id="selectByServiceId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_METHOD
+   		<where>
+   			<if test="service_id != null">
+   				SERVICE_ID = #{service_id,jdbcType=INTEGER}
+   			</if>
+   			and IS_DEL = 0
+   		</where>
+	</select>
+	
+	<update id="updateById" parameterType="com.uusoft.atp.model.TestMethodInfo">
+		update TEST_METHOD
+        set SERVICE_ID = #{service_id,jdbcType=INTEGER},
+        	METHOD_NAME = #{method_name,jdbcType=VARCHAR},
+        	METHOD_DES = #{method_des,jdbcType=VARCHAR}
+        where METHOD_ID = #{method_id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="deleteById">
+		update TEST_METHOD
+        set IS_DEL = 1
+        where METHOD_ID = #{method_id,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

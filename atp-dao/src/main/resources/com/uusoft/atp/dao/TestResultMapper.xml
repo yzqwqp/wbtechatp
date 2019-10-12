@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.uusoft.atp.dao.TestResultMapper">
+	<resultMap id="BaseResultMap" type="com.uusoft.atp.model.TestResultInfo" >
+	    <result column="RESULT_ID" property="result_id" jdbcType="INTEGER" />
+	    <result column="EXECUTION_ID" property="execution_id" jdbcType="INTEGER" />
+	    <result column="SUITE_ID" property="suite_id" jdbcType="INTEGER" />
+	    <result column="CASE_ID" property="case_id" jdbcType="INTEGER" />
+	    <result column="CASE_DES" property="case_des" jdbcType="VARCHAR" />
+	    <result column="METHOD_ADDRESS" property="method_address" jdbcType="VARCHAR" />
+	    <result column="CASE_DATA" property="case_data" jdbcType="VARCHAR" />
+	    <result column="RESPONSE_DATA" property="response_data" jdbcType="VARCHAR" />
+	    <result column="CASE_ASSERT_TYPE" property="case_assert_type" jdbcType="INTEGER" />
+	    <result column="CASE_ASSERT_VALUE" property="case_assert_value" jdbcType="VARCHAR" />
+	    <result column="RESPONSE_ASSERT_VALUE" property="response_assert_value" jdbcType="VARCHAR" />
+	    <result column="HTTP_STATUS" property="http_status" jdbcType="INTEGER" />
+	    <result column="HTTP_ERROR" property="http_error" jdbcType="VARCHAR" />
+	    <result column="ASSERT_STATUS" property="assert_status" jdbcType="INTEGER" />
+	    <result column="ASSERT_ERROR" property="assert_error" jdbcType="VARCHAR" />
+	    <result column="CREATE_DATE" property="create_date" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    	RESULT_ID, EXECUTION_ID, SUITE_ID, CASE_ID, CASE_DES, METHOD_ADDRESS, CASE_DATA, RESPONSE_DATA, CASE_ASSERT_TYPE, CASE_ASSERT_VALUE, RESPONSE_ASSERT_VALUE, HTTP_STATUS, HTTP_ERROR, ASSERT_STATUS, ASSERT_ERROR, CREATE_DATE
+  	</sql>
+	
+	<insert id="insert" parameterType="com.uusoft.atp.model.TestResultInfo" useGeneratedKeys="true" keyProperty="result_id">
+		insert into TEST_RESULT (EXECUTION_ID, SUITE_ID, CASE_ID, CASE_DES, METHOD_ADDRESS, CASE_DATA, RESPONSE_DATA, CASE_ASSERT_TYPE, CASE_ASSERT_VALUE, RESPONSE_ASSERT_VALUE, HTTP_STATUS, HTTP_ERROR, ASSERT_STATUS, ASSERT_ERROR, CREATE_DATE)
+			 values (#{execution_id}, #{suite_id}, #{case_id}, #{case_des}, #{method_address}, #{case_data}, #{response_data}, #{case_assert_type}, #{case_assert_value}, #{response_assert_value}, #{http_status}, #{http_error}, #{assert_status}, #{assert_error}, now())
+	</insert>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_RESULT
+	</select>
+		
+	<select id="selectById" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_RESULT
+   		<where>
+   			ESULT_ID = #{result_id,jdbcType=INTEGER}
+   		</where>
+	</select>
+	
+	<select id="selectByExecutionId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_RESULT
+   		<where>
+   			EXECUTION_ID = #{execution_id,jdbcType=INTEGER}
+   		</where>
+	</select>
+	
+	<select id="selectFailureResultByExecutionId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_RESULT 
+   		<where>
+   			ASSERT_STATUS not in (10,0) 
+   			AND EXECUTION_ID = #{execution_id,jdbcType=INTEGER}
+   		</where>
+	</select>
+	
+	<select id="selectUnrunResultByExecutionId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_RESULT 
+   		<where>
+   			ASSERT_STATUS = 0
+   			AND EXECUTION_ID = #{execution_id,jdbcType=INTEGER}
+   		</where>
+	</select>
+	
+</mapper>

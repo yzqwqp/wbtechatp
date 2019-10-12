@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+	
+ -->
+<mapper namespace="com.uusoft.atp.dao.TestExecutionMapper">
+	<resultMap id="BaseResultMap" type="com.uusoft.atp.model.TestExecutionInfo" >
+	    <result column="EXECUTION_ID" property="execution_id" jdbcType="INTEGER" />
+	    <result column="EXECUTION_TYPE" property="execution_type" jdbcType="INTEGER" />
+	    <result column="EXECUTION_TYPE_VALUE" property="execution_type_value" jdbcType="INTEGER" />
+	    <result column="EXECUTION_TYPE_NAME" property="execution_type_name" jdbcType="VARCHAR" />
+	    <result column="EXECUTION_START_TIME" property="execution_start_time" jdbcType="TIMESTAMP" />
+	    <result column="EXECUTION_END_TIME" property="execution_end_time" jdbcType="TIMESTAMP" />
+	    <result column="EXECUTION_TIME" property="execution_time" jdbcType="TIMESTAMP" />
+	    <result column="TOTAL_NUM" property="total_num" jdbcType="INTEGER" />
+	    <result column="TRUE_NUM" property="true_num" jdbcType="INTEGER" />
+	    <result column="FAILURE_NUM" property="failure_num" jdbcType="INTEGER" />
+	    <result column="UNRUN_NUM" property="unrun_num" jdbcType="INTEGER" />
+	    <result column="EXECUTION_DETAIL" property="execution_detail" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List" >
+    	EXECUTION_ID, EXECUTION_TYPE, EXECUTION_TYPE_NAME, EXECUTION_TYPE_VALUE, EXECUTION_START_TIME, EXECUTION_END_TIME, EXECUTION_TIME, TOTAL_NUM, TRUE_NUM, FAILURE_NUM, UNRUN_NUM, EXECUTION_DETAIL
+  	</sql>
+  	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="execution_id" parameterType="com.uusoft.atp.model.TestExecutionInfo">
+		insert into TEST_execution (EXECUTION_TYPE, EXECUTION_TYPE_NAME, EXECUTION_TYPE_VALUE, EXECUTION_START_TIME, TOTAL_NUM, TRUE_NUM, FAILURE_NUM, UNRUN_NUM)
+			 values (#{execution_type}, #{execution_type_name}, #{execution_type_value}, now(), 0, 0, 0, 0)
+	</insert>
+	
+	<select id="selectByExecutionId" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_EXECUTION
+   		<where>
+   			EXECUTION_ID = #{execution_id,jdbcType=INTEGER}
+   		</where>
+	</select>
+	
+	<select id="selectAll" resultMap="BaseResultMap">
+		select 
+    	<include refid="Base_Column_List" />
+   		from TEST_EXECUTION
+   		order by EXECUTION_ID desc Limit 30;
+	</select>
+
+	<update id="updateById" parameterType="com.uusoft.atp.model.TestExecutionInfo">
+        update TEST_EXECUTION 
+        set EXECUTION_END_TIME = now(),
+			EXECUTION_TIME = (SELECT TIMESTAMPDIFF(SECOND, EXECUTION_START_TIME, now())),
+        	TOTAL_NUM = #{total_num,jdbcType=INTEGER},
+        	TRUE_NUM = #{true_num,jdbcType=INTEGER},
+        	FAILURE_NUM = #{failure_num,jdbcType=INTEGER},
+        	UNRUN_NUM = #{unrun_num,jdbcType=INTEGER},
+        	EXECUTION_DETAIL = #{execution_detail,jdbcType=VARCHAR}
+        where EXECUTION_ID = #{execution_id,jdbcType=INTEGER}
+	</update>
+	
+	<update id="updateBySql" parameterType="String">
+		${sqlStr}
+	</update>
+	
+</mapper>
